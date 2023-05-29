@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function showPopup() {
+            var jobNameInput = document.getElementById("name");
+            var pipelineName = jobNameInput.value;
+            
+            if (pipelineName.trim() === '') {
+                alert("Please enter a valid job name.");
+                return false;
+            }
+            
+            var popup = document.getElementById("popup");
+            popup.innerHTML = '"' + pipelineName + '" pipeline triggered!';
+            popup.style.display = "block";
+            setTimeout(function() {
+                popup.style.display = "none";
+            }, 3000); // Hide popup after 3 seconds
+            return false; // Prevent form submission
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Orchestration Job</h1>
+		</div>
+        <!-- Run section -->
+        <div class="section run-section">
+            <h2>Run Orchestration</h2>
+            <form onsubmit="return showPopup()">
+                <label for="name">Job Name:</label>
+                <input type="text" id="name" name="name" required>
+                <button type="submit">Run</button>
+            </form>
+        </div>
+		</div>
+		
+		<!-- Spacing between sections -->
+        <div style="height: 30px;"></div>
+        <!-- History section -->
+        <div class="section history-section">
+            <h2>Execution History</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by Job Name">
+                <button type="button" onclick="searchJobs()">Search</button>
+            </div>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Executor</th>
+                        <th>Job Name</th>
+                        <th>Execution Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in history %}
+                    <tr>
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.executor }}</td>
+                        <td>{{ row.job_name }}</td>
+                        <td>{{ row.execution_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        Pipeline triggered!
+    </div>
+    
+    <script>
+        function searchJobs() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("historyTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2]; // Index 2 is for Job Name column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
